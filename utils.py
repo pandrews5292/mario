@@ -26,6 +26,7 @@ def load_image(filename, color_key=None, double=None):
 
 class HUD():
     def __init__(self):
+        self.font = pygame.font.Font(None, 36)
         self.start_time = time.time()
         self.time_over = False
         self.time_text_pos = (710, 50) 
@@ -35,7 +36,7 @@ class HUD():
         self.world_level_num_pos = (550, 50)
         self.world_text_pos = (530, 30)
         self.num_lives = 05
-        self.num_lives_pos = (322, 50)
+        self.num_lives_pos = (322, 51)
         self.mario_text_pos = (300, 30)
         self.score_pos = (100, 30)
         self.score = 0000000
@@ -78,7 +79,7 @@ class HUD():
     def set_coins(self, coins):
         self.coins = coins
         
-    def get_time(self):
+    def update_time(self, background, clean_background):
         if self.time_over:
             self.cur_time = 0
         else:
@@ -86,47 +87,58 @@ class HUD():
             if (self.cur_time <= 0):
                 self.time_over = True
 
-
-    def print_hud(self, background):
-        font = pygame.font.Font(None, 36)
-
-        time_text = font.render("TIME", 1, (0, 0, 0))
-        counting_time_text = font.render(str(self.cur_time), 1, (0, 0, 0))
-
-        time_pos = time_text.get_rect(center=self.time_pos)
+        counting_time_text = self.font.render(str(self.cur_time), 1, (0, 0, 0))
         counting_time_pos = counting_time_text.get_rect(center=self.time_text_pos)
 
-        world_num_text = font.render(str(self.world_num) + " - " + str(self.level_num), 1, (0, 0, 0))
-        world_num_pos = world_num_text.get_rect(center=self.world_level_num_pos)
+        background.blit(clean_background, counting_time_pos, counting_time_pos)
+        background.blit(counting_time_text, counting_time_pos)
 
-        world_text = font.render("WORLD", 1, (0, 0, 0))
+    def set_up_statics(self, background):
+                
+        time_text = self.font.render("TIME", 1, (0, 0, 0))
+        time_pos = time_text.get_rect(center=self.time_pos)
+
+        world_text = self.font.render("WORLD", 1, (0, 0, 0))
         world_text_pos = world_text.get_rect(center=self.world_text_pos)
 
-        mario_lives = font.render("x " + str(self.num_lives), 1, (0, 0, 0))
-        mario_name = font.render("MARIO", 1, (0, 0, 0))
-
-        mario_lives_pos = mario_lives.get_rect(center=self.num_lives_pos)
+        mario_name = self.font.render("MARIO", 1, (0, 0, 0))
         mario_name_pos = mario_name.get_rect(center=self.mario_text_pos)
 
-        score_text = font.render("SCORE: " + str(self.score), 1, (0, 0, 0))
+
+        background.blit(time_text, time_pos)
+        background.blit(world_text, world_text_pos)
+        background.blit(mario_name, mario_name_pos)
+        background.blit(self.coin_image, self.coin_rect.center)
+
+
+    def load_cur_world(self, background, clean_background):
+        world_num_text = self.font.render(str(self.world_num) + " - " + str(self.level_num), 1, (0, 0, 0))
+        world_num_pos = world_num_text.get_rect(center=self.world_level_num_pos)
+
+        background.blit(clean_background, world_num_pos, world_num_pos)
+        background.blit(world_num_text, world_num_pos)
+
+
+    def load_cur_num_lives(self, background, clean_background):
+        mario_lives = self.font.render("x " + str(self.num_lives), 1, (0, 0, 0))
+        mario_lives_pos = mario_lives.get_rect(center=self.num_lives_pos)
+
+        background.blit(clean_background, mario_lives_pos, mario_lives_pos)
+        background.blit(mario_lives, mario_lives_pos)
+
+    def load_score(self, background, clean_background):
+        score_text = self.font.render("SCORE: " + str(self.score), 1, (0, 0, 0))
         score_pos = score_text.get_rect(center=self.score_pos)
 
-        coins_text = font.render(": " + str(self.coins), 1, (0, 0, 0))
+        background.blit(clean_background, score_pos, score_pos)
+        background.blit(score_text, score_pos)
+
+    def load_num_coins(self, background, clean_background):
+        coins_text = self.font.render(": " + str(self.coins), 1, (0, 0, 0))
         coins_pos = coins_text.get_rect(center=self.coins_pos)
 
-                                  
-        background.fill(BACKGROUND_COLOR)
-        background.blit(time_text, time_pos)
-        background.blit(counting_time_text, counting_time_pos)
-        background.blit(world_num_text, world_num_pos)
-        background.blit(world_text, world_text_pos)
-        background.blit(mario_lives, mario_lives_pos)
-        background.blit(mario_name, mario_name_pos)
-        background.blit(score_text, score_pos)
-        background.blit(self.coin_image, self.coin_rect.center)
+        background.blit(clean_background, coins_pos, coins_pos)
         background.blit(coins_text, coins_pos)
-                                             
-                                             
         
 
 
