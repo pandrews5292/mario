@@ -9,24 +9,22 @@ import utils
 BACKGROUND_COLOR = (135, 206, 250)
 SCREEN_SIZE = (800, 500)
 
-class Floor(pygame.sprite.Sprite):
+class Floor():
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
-        self.image, self.rect = utils.load_image('bricks.png')
-        self.x = 0
-        self.y = 500
+        self.image, self.rect = utils.load_image('bricks.png', -1, 1)
+        self.x = -610
+        self.y = -20
 
-    def update(self):
-        if self.rect.right - 20 < self.area.right:
-            self.x = 0
-        self.rect.bottomleft = (self.x, self.y)
-
-    def slide(self):
-        self.x -= 10
-
-
+    def draw_floor(self, background):
+        cur = self.x
+        background.blit(self.image, (self.x, self.y))
+        for i in range(15):
+            cur += 145
+            background.blit(self.image, (cur, self.y)) 
+ 
+    
 def main():
     #sky blue background color
 
@@ -38,8 +36,10 @@ def main():
 
     background.fill(BACKGROUND_COLOR)
     background = background.convert()
+
+    floor = Floor()
         
-    #allsprites = pygame.sprite.RenderPlain((mario))   
+    #allsprites = pygame.sprite.RenderPlain((floor))   
 
     game_over = False
 
@@ -53,6 +53,8 @@ def main():
         clock.tick(60)
         hud.get_time()
         hud.print_hud(background)
+        floor.draw_floor(background)
+
 
         
         for event in pygame.event.get():

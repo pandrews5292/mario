@@ -9,10 +9,14 @@ from pygame.locals import *
 BACKGROUND_COLOR = (135, 206, 250)
 SCREEN_SIZE = (800, 500)
 
-def load_image(filename, color_key=None):
+def load_image(filename, color_key=None, double=None):
     full_path = os.path.join('images', filename)
-    image = pygame.image.load(full_path)
-    image = image.convert()
+    if (double != None):
+        image = pygame.transform.scale2x(pygame.image.load(full_path))
+        image.convert()
+    else:
+        image = pygame.image.load(full_path)
+        image = image.convert()
     if color_key is not None:
         if color_key is -1:
             color_key = image.get_at((0,0))
@@ -35,8 +39,11 @@ class HUD():
         self.mario_text_pos = (300, 30)
         self.score_pos = (100, 30)
         self.score = 0000000
-        self.coins_pos = (103, 50)
+        self.coins_pos = (143, 57)
         self.coins = 0000000
+        self.coin_image, self.coin_rect = load_image('coin.png', (255, 255, 255))
+        self.coin_rect.x = -500
+        self.coin_rect.y = -405
      
     def get_start_time(self):
         return self.start_time
@@ -104,7 +111,7 @@ class HUD():
         score_text = font.render("SCORE: " + str(self.score), 1, (0, 0, 0))
         score_pos = score_text.get_rect(center=self.score_pos)
 
-        coins_text = font.render("COINS: " + str(self.coins), 1, (0, 0, 0))
+        coins_text = font.render(": " + str(self.coins), 1, (0, 0, 0))
         coins_pos = coins_text.get_rect(center=self.coins_pos)
 
                                   
@@ -116,6 +123,7 @@ class HUD():
         background.blit(mario_lives, mario_lives_pos)
         background.blit(mario_name, mario_name_pos)
         background.blit(score_text, score_pos)
+        background.blit(self.coin_image, self.coin_rect.center)
         background.blit(coins_text, coins_pos)
                                              
                                              
