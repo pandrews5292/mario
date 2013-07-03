@@ -20,13 +20,18 @@ class Enemy(pygame.sprite.Sprite):
         self.moving_right = 0
         self.moving_left = 0
         self.still = 1
+
        
     def move_left(self):
         self.moving_left = 1
-        self.rect.move_ip(-5, 0)
+        if (self.rect.center[0] - 30 > self.area.left):
+            self.rect.move_ip(-5, 0)
     
     def move_right(self):
-        self.moving_right = 1
+        if (self.rect.center[0] < self.area.center[0]):
+            self.rect.move_ip(5, 0)
+        else:
+            self.moving_right = 1
 
     def update(self):
         self.moving_right = 0
