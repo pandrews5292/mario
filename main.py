@@ -9,6 +9,29 @@ import utils
 BACKGROUND_COLOR = (135, 206, 250)
 SCREEN_SIZE = (800, 500)
 
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, enemy_type=None):
+        pygame.sprite.Sprite.__init__(self)
+        screen = pygame.display.get_surface()
+        self.area = screen.get_rect()
+        self.type = enemy_type
+        self.image, self.rect = utils.load_image('goomba.png', -1)
+        self.rect.topleft = (150, 193)
+        self.moving_right = 0
+        self.moving_left = 0
+        self.still = 1
+       
+    def move_left(self):
+        self.moving_left = 1
+        self.rect.move_ip(-5, 0)
+    
+    def move_right(self):
+        self.moving_right = 1
+
+    def update(self):
+        self.moving_right = 0
+        self.moving_left = 0
+
 class Floor():
     def __init__(self):
         screen = pygame.display.get_surface()
@@ -21,30 +44,22 @@ class Floor():
     def draw_floor(self, background):
         cur = self.x
         background.blit(self.image, (self.x, self.y))
-        self.floor_boards.append(self.image)
-        for i in range(5):
+        self.floor_boards.append([self.image, self.x, self.y])
+        for i in range(50):
             new_floor = pygame.Surface.copy(self.image)
             cur += 145
             background.blit(new_floor, (cur, self.y)) 
-            self.floor_boards.append(new_floor)
+            self.floor_boards.append([new_floor, cur, self.y])
         print self.floor_boards
 
-    def walk(self, background, clean_background):
-        for i in range(6):
-            self.floor_boards[i].get_rect().move_ip(-5, 0)
+def shift_game_objects(mario, objects, background, clean_background):
+    background.blit(clean_background, Rect(0, 370, 30, 800))
 
-class Camera():
-    def __init__(self, camera_func, width, height):
-        self.camera_func = camera_func
-        self.state = Rect(0, 0, width, height)
+    for o in objects:
+        if (mario.moving_right == 1):
+            o[1] -= 5
+        background.blit(o[0], (o[1], o[2]))
 
-    def apply(self, target):
-        return target.rect.move(self.state.topleft)
-
-    def update(self, target):
-        self.state = self.camera_func(self.state, target.rect)
- 
-    
 def main():
     #sky blue background color
 
@@ -60,10 +75,11 @@ def main():
     clean_background = pygame.Surface.copy(background)
 
     floor = Floor()
+    goomba = Enemy()
     floor.draw_floor(background)
 
         
-    #allsprites = pygame.sprite.RenderPlain()   
+    allsprites = pygame.sprite.RenderPlain((goomba))   
 
     game_over = False
 
@@ -73,8 +89,6 @@ def main():
 
     clock = pygame.time.Clock()
     pygame.key.set_repeat(50,50)
-
-
 
     while not game_over:
         clock.tick(60)
@@ -90,13 +104,17 @@ def main():
             elif event.type == KEYDOWN:
                 keys = pygame.key.get_pressed()
                 if keys[K_RIGHT]:
-                    floor.walk()
-               
+                    goomba.move_right()
+                    shift_game_objects(goomba, floor.floor_boards, background, clean_background)
 
-        #allsprites.update()
+                if keys[K_LEFT]:
+                    goomba.move_left()
+                    shift_game_objects(goomba, floor.floor_boards, background, clean_background)
+
         screen.blit(background, (0, 0))
-        #allsprites.draw(screen)
+        allsprites.draw(screen)
         pygame.display.flip()
+        goomba.update()
 
                 
 

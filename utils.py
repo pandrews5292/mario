@@ -90,7 +90,7 @@ class HUD():
         counting_time_text = self.font.render(str(self.cur_time), 1, (0, 0, 0))
         counting_time_pos = counting_time_text.get_rect(center=self.time_text_pos)
 
-        background.blit(clean_background, counting_time_pos, counting_time_pos)
+        background.blit(clean_background, (counting_time_pos[0], counting_time_pos[1]+5), counting_time_pos )
         background.blit(counting_time_text, counting_time_pos)
 
     def set_up_statics(self, background):
@@ -115,7 +115,7 @@ class HUD():
         world_num_text = self.font.render(str(self.world_num) + " - " + str(self.level_num), 1, (0, 0, 0))
         world_num_pos = world_num_text.get_rect(center=self.world_level_num_pos)
 
-        background.blit(clean_background, world_num_pos, world_num_pos)
+        background.blit(clean_background, (world_num_pos[0], world_num_pos[1]+5), world_num_pos)
         background.blit(world_num_text, world_num_pos)
 
 
@@ -123,14 +123,14 @@ class HUD():
         mario_lives = self.font.render("x " + str(self.num_lives), 1, (0, 0, 0))
         mario_lives_pos = mario_lives.get_rect(center=self.num_lives_pos)
 
-        background.blit(clean_background, mario_lives_pos, mario_lives_pos)
+        background.blit(clean_background, (mario_lives_pos[0], mario_lives_pos[1]+5), mario_lives_pos)
         background.blit(mario_lives, mario_lives_pos)
 
     def load_score(self, background, clean_background):
         score_text = self.font.render("SCORE: " + str(self.score), 1, (0, 0, 0))
         score_pos = score_text.get_rect(center=self.score_pos)
 
-        background.blit(clean_background, score_pos, score_pos)
+        background.blit(clean_background, (score_pos[0], score_pos[1]-5), score_pos)
         background.blit(score_text, score_pos)
 
     def load_num_coins(self, background, clean_background):
