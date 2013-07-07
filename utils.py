@@ -42,10 +42,11 @@ class HUD():
         self.score = 0000000
         self.coins_pos = (143, 57)
         self.coins = 0000000
-        self.coin_image, self.coin_rect = load_image('coin.png', (255, 255, 255))
-        self.coin_rect.x = -500
-        self.coin_rect.y = -405
-     
+        self.coin_image, self.coin_rect = load_image('coin.png', -1)
+
+        self.coin_rect.x = 100
+        self.coin_rect.y = 30
+
     def get_start_time(self):
         return self.start_time
 
