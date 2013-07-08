@@ -91,7 +91,7 @@ class HUD():
         counting_time_text = self.font.render(str(self.cur_time), 1, (0, 0, 0))
         counting_time_pos = counting_time_text.get_rect(center=self.time_text_pos)
 
-        background.blit(clean_background, (counting_time_pos[0], counting_time_pos[1]+5), counting_time_pos )
+        background.blit(clean_background, (counting_time_pos[0], counting_time_pos[1]+2), counting_time_pos )
         background.blit(counting_time_text, counting_time_pos)
 
     def set_up_statics(self, background):

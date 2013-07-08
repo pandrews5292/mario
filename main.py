@@ -19,7 +19,6 @@ class Enemy(pygame.sprite.Sprite):
         self.gravity = .5
         self.right_key_pressed = False
         self.left_key_pressed = False
-        self.moving = False
         self.jump_key_pressed = False
         self.jumping = False
         self.x_vel = 0
@@ -44,7 +43,6 @@ class Enemy(pygame.sprite.Sprite):
         self.left_key_pressed = False
   
     def update(self):
-               
         if (not self.jumping and self.jump_key_pressed):
             self.y_vel = -10
             self.jumping = True
@@ -55,22 +53,18 @@ class Enemy(pygame.sprite.Sprite):
             else:
                 self.jumping = False
 
-        if (not self.moving and self.left_key_pressed):
-            self.moving = True
+        if self.left_key_pressed and self.rect.midleft[0] > 0:
             self.x_vel = -8
 
-        elif (not self.moving and self.right_key_pressed):
-            self.moving = True
+        elif self.right_key_pressed and self.rect.midright[0] < 400:
             self.x_vel = 8
-        else:
-            self.moving = False
-
-        if self.moving:
-            self.x_pos += self.x_vel
         
-        self.rect.center = (self.x_pos, self.y_pos)
+        else:
+            self.x_vel = 0
 
-        self.reset()
+        self.x_pos += self.x_vel
+        self.rect.center = (self.x_pos, self.y_pos)
+        self.reset()                                    
 
  
 class Floor():
@@ -92,11 +86,12 @@ class Floor():
             background.blit(new_floor, (cur, self.y)) 
             self.floor_boards.append([new_floor, cur, self.y])
 
+
 def shift_game_objects(mario, objects, background, clean_background):
     background.blit(clean_background, Rect(0, 370, 30, 800))
 
     for o in objects:
-        if (mario.right_key_pressed == True):
+        if (mario.right_key_pressed == True and mario.rect.midright[0] >= 400):
             o[1] -= 5
         background.blit(o[0], (o[1], o[2]))
 
@@ -171,10 +166,6 @@ def main():
         if keystates['jump']:
             goomba.jump()
                                 
-      
-                    
-                    
-
         goomba.update()
 
         screen.blit(background, (0, 0))
