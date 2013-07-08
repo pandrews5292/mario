@@ -15,7 +15,7 @@ class Enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
-        self.image, self.rect = utils.load_image('goomba.png', -1)
+        self.image, self.rect = utils.load_image('smario.png', -1)
         self.gravity = .5
         self.right_key_pressed = False
         self.left_key_pressed = False
