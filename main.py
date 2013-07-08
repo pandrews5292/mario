@@ -35,7 +35,6 @@ class Enemy(pygame.sprite.Sprite):
         elif direction == "L":
             self.left_key_pressed = True
 
-
     def jump(self):
         self.jump_key_pressed = True
 
@@ -71,7 +70,6 @@ class Enemy(pygame.sprite.Sprite):
         
         self.rect.center = (self.x_pos, self.y_pos)
 
-        #print self.right_key_pressed, self.left_key_pressed, self.jump_key_pressed
         self.reset()
 
  
@@ -98,7 +96,7 @@ def shift_game_objects(mario, objects, background, clean_background):
     background.blit(clean_background, Rect(0, 370, 30, 800))
 
     for o in objects:
-        if (mario.moving_right == 1):
+        if (mario.right_key_pressed == True):
             o[1] -= 5
         background.blit(o[0], (o[1], o[2]))
 
@@ -130,11 +128,12 @@ def main():
 
 
     clock = pygame.time.Clock()
-    pygame.key.set_repeat(1,1)
+    pygame.key.set_repeat(1, 1)
+    keystates={'jump': False, 'left':False, 'right':False}
 
 
     while not game_over:
-        clock.tick(80)
+        clock.tick(60)
         hud.update_time(background, clean_background)
         hud.load_cur_world(background, clean_background)
         hud.load_cur_num_lives(background, clean_background)
@@ -144,25 +143,38 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit(0)
-            elif event.type in (KEYUP, KEYDOWN):
-                keys = pygame.key.get_pressed()
-                
-                if keys[K_RIGHT]:
-                    print "right"
-                    #shift_game_objects(goomba, floor.floor_boards, background, clean_background)
-                    goomba.move("R")
-                if keys[K_LEFT]:
-                    print "left"
-                    #shift_game_objects(goomba, floor.floor_boards, background, clean_background)
-                    goomba.move("L")
-                if keys[K_SPACE]:
-                    print "jump"
-                    goomba.jump()
+            if event.type == KEYDOWN:
 
-                print keys[K_RIGHT], keys[K_LEFT], keys[K_SPACE]
-
+                if event.key == K_RIGHT:
+                    keystates['right'] = True
                     
+                if event.key == K_LEFT:
+                    keystates['left'] = True
                 
+                if event.key == K_SPACE:
+                    keystates['jump'] = True
+            if event.type == KEYUP:
+                if event.key == K_RIGHT:
+                    keystates['right'] = False
+                    
+                if event.key == K_LEFT:
+                    keystates['left'] = False
+                
+                if event.key == K_SPACE:
+                    keystates['jump'] = False
+
+        if keystates['right']:
+            goomba.move("R")
+            shift_game_objects(goomba, floor.floor_boards, background, clean_background)
+        if keystates['left']:
+            goomba.move("L")
+        if keystates['jump']:
+            goomba.jump()
+                                
+      
+                    
+                    
+
         goomba.update()
 
         screen.blit(background, (0, 0))
