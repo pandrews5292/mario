@@ -24,12 +24,15 @@ def load_image(filename, color_key=None, double=None):
 
     return image, image.get_rect()
 
+    
+    
+
 class HUD():
     def __init__(self):
         self.font = pygame.font.Font(None, 36)
         self.start_time = time.time()
         self.time_over = False
-        self.time_text_pos = (710, 50) 
+        self.time_text_pos = (710, 55) 
         self.time_pos = (701, 30)
         self.world_num = 1
         self.level_num = 1
@@ -91,7 +94,7 @@ class HUD():
         counting_time_text = self.font.render(str(self.cur_time), 1, (0, 0, 0))
         counting_time_pos = counting_time_text.get_rect(center=self.time_text_pos)
 
-        background.blit(clean_background, (counting_time_pos[0], counting_time_pos[1]+2), counting_time_pos )
+        background.blit(clean_background, (counting_time_pos[0], counting_time_pos[1]+5), counting_time_pos )
         background.blit(counting_time_text, counting_time_pos)
 
     def set_up_statics(self, background):
