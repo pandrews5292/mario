@@ -5,139 +5,42 @@ import time
 import pygame
 from pygame.locals import * 
 import utils
+import sprites
 
 BACKGROUND_COLOR = (135, 206, 250)
 SCREEN_SIZE = (800, 500)
 FLOOR_Y = 440
-
-class Mario(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        screen = pygame.display.get_surface()
-        self.area = screen.get_rect()
-        self.image_a, self.rect = utils.load_image('mario_a.png', -1)
-        self.image_b = utils.load_image('mario_b.png', -1)[0]
-        self.image_c = utils.load_image('mario_c.png', -1)[0]
- 
-        self.gravity = .5
-        self.right_key_pressed = False
-        self.left_key_pressed = False
-        self.jump_key_pressed = False
-        self.jumping = False
-        self.x_vel = 0
-        self.y_vel = -10
-        self.x_pos = 300
-        self.y_pos = FLOOR_Y
-        self.rect.center = (self.x_pos, self.y_pos)
-        self.image = self.image_a
-        self.cur_image = 1
-        self.frame = 0
-        self.facing_left = False
-        self.facing_right = True
+FLOOR_LENGTH = 145
 
 
-        
-    def move(self, direction):
-        self.frame += 1
-
-            
-        if direction == "R":
-            self.facing_right = True
-            self.facing_left = False
-            if (self.frame % 4 == 0 and not self.jumping):
-                if (self.cur_image == 1):
-                    self.image = self.image_b
-                    self.cur_image = 2
-                elif (self.cur_image == 2):
-                    self.image = self.image_c
-                    self.cur_image = 3
-                else:
-                    self.image = self.image_a
-                    self.cur_image = 1
-            self.right_key_pressed = True
-        elif direction == "L":
-            self.facing_right = False
-            self.facing_left = True
-            if (self.frame % 4 == 0 and not self.jumping):
-                if (self.cur_image == 1):
-                    self.image = pygame.transform.flip(self.image_b, True, False)
-                    self.cur_image = 2
-                elif (self.cur_image == 2):
-                    self.image = pygame.transform.flip(self.image_c, True, False)
-                    self.cur_image = 3
-                else:
-                    self.image = pygame.transform.flip(self.image_a, True, False)
-                    self.cur_image = 1
-            self.left_key_pressed = True
-
-    def jump(self):
-        self.jump_key_pressed = True
-        if (self.facing_right):
-            self.image = self.image_c
-        if (self.facing_left):
-            self.image = pygame.transform.flip(self.image_c, True, False)
-
-    def reset(self):
-        self.jump_key_pressed = False
-        self.right_key_pressed = False
-        self.left_key_pressed = False
-  
-    def update(self):
-        #print self.cur_image
-        
-        if (not self.jumping and self.jump_key_pressed):
-            self.y_vel = -10
-            self.jumping = True
-        if self.jumping:
-            if (self.rect.center[1] + self.y_vel < FLOOR_Y + 10):
-                self.y_pos += self.y_vel
-                self.y_vel += self.gravity
-            else:
-                self.jumping = False
-
-        if self.left_key_pressed and self.rect.midleft[0] > 0:
-            self.x_vel = -6
-  
-
-        elif self.right_key_pressed and self.rect.midright[0] < 400:
-            self.x_vel = 6
-          
-        else:
-            self.x_vel = 0
-
-        self.x_pos += self.x_vel
-        self.rect.center = (self.x_pos, self.y_pos)
-        self.reset()                                    
-
- 
-class Floor():
-    def __init__(self):
-        screen = pygame.display.get_surface()
-        self.area = screen.get_rect()
-        self.image, self.rect = utils.load_image('bricks.png', -1, 1)
-        self.x = -5
-        self.y = 464
-        self.floor_boards = []
-
-    def draw_floor(self, background):
-        cur = self.x
-        background.blit(self.image, (self.x, self.y))
-        self.floor_boards.append([self.image, self.x, self.y])
-        for i in range(50):
-            new_floor = pygame.Surface.copy(self.image)
-            cur += 145
-            background.blit(new_floor, (cur, self.y)) 
-            self.floor_boards.append([new_floor, cur, self.y])
+def shift_game_objects(mario, floor_boards):
+    if (mario.right_key_pressed == True and mario.rect.midright[0] >= 400):
+        for floor in floor_boards:
+            floor.x -= 6
+    floor_boards.update()
 
 
-def shift_game_objects(mario, objects, background, clean_background):
-    background.blit(clean_background, Rect(0, 370, 30, 800))
+def draw_floor(num_floor_boards):
+    floor_boards = pygame.sprite.RenderPlain()
+    offset = 0
+    
+    for i in range(num_floor_boards):
+        floor = sprites.Floor()
+        floor.x += offset
+        offset += FLOOR_LENGTH
+        floor_boards.add(floor)
+    floor_boards.update()
 
-    for o in objects:
-        if (mario.right_key_pressed == True and mario.rect.midright[0] >= 400):
-            o[1] -= 5
-        background.blit(o[0], (o[1], o[2]))
+    return floor_boards
 
+def generate_platform(floor_boards, x_pos, y_pos):
+    floor = sprites.Floor()
+    floor.x = x_pos
+    floor.y = y_pos
+    floor_boards.add(floor)
+    floor_boards.update()
+    
+    
 def main():
     #sky blue background color
 
@@ -152,12 +55,14 @@ def main():
     background = background.convert()
     clean_background = pygame.Surface.copy(background)
 
-    floor = Floor()
-    mario = Mario()
-    floor.draw_floor(background)
+    mario = sprites.Mario()
+    floor_boards = draw_floor(10)
+    floor_boards.draw(screen)
+    
+    generate_platform(floor_boards, 300, 400)
 
         
-    allsprites = pygame.sprite.RenderPlain((mario))   
+    mario_group = pygame.sprite.RenderPlain((mario))   
 
     game_over = False
 
@@ -203,16 +108,17 @@ def main():
 
         if keystates['right']:
             mario.move("R")
-            shift_game_objects(mario, floor.floor_boards, background, clean_background)
+            shift_game_objects(mario, floor_boards)
         if keystates['left']:
             mario.move("L")
         if keystates['jump']:
             mario.jump()
                                 
-        mario.update()
+        mario.update(floor_boards)
 
         screen.blit(background, (0, 0))
-        allsprites.draw(screen)
+        mario_group.draw(screen)
+        floor_boards.draw(screen)
         pygame.display.flip()
 
                 
